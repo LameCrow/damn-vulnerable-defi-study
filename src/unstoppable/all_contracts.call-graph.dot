@@ -1,0 +1,238 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_64_IERC3156FlashLender {
+label = "IERC3156FlashLender"
+"64_flashLoan" [label="flashLoan"]
+"64_maxFlashLoan" [label="maxFlashLoan"]
+"64_flashFee" [label="flashFee"]
+}subgraph cluster_1990_UnstoppableVault {
+label = "UnstoppableVault"
+"1990_flashFee" [label="flashFee"]
+"1990_setPause" [label="setPause"]
+"1990_beforeWithdraw" [label="beforeWithdraw"]
+"1990_flashLoan" [label="flashLoan"]
+"1990_maxFlashLoan" [label="maxFlashLoan"]
+"1990_execute" [label="execute"]
+"1990_asset" [label="asset"]
+"1990_afterDeposit" [label="afterDeposit"]
+"1990_constructor" [label="constructor"]
+"1990_setFeeRecipient" [label="setFeeRecipient"]
+"1990_totalAssets" [label="totalAssets"]
+"1990_setFeeRecipient" -> "1990_onlyOwner"
+"1990_flashFee" -> "1990_maxFlashLoan"
+"1990_maxFlashLoan" -> "1990_nonReadReentrant"
+"1990_totalAssets" -> "1990_nonReadReentrant"
+"1990_execute" -> "1990_whenPaused"
+"1990_afterDeposit" -> "1990_whenNotPaused"
+"1990_setPause" -> "1990_onlyOwner"
+"1990_execute" -> "1990_onlyOwner"
+"1990_setPause" -> "1990__pause"
+"1990_flashLoan" -> "1990_totalAssets"
+"1990_afterDeposit" -> "1990_nonReentrant"
+"1990_constructor" -> "1990_constructor"
+"1990_maxFlashLoan" -> "1990_totalAssets"
+"1990_beforeWithdraw" -> "1990_nonReentrant"
+"1990_flashLoan" -> "1990_flashFee"
+"1990_flashLoan" -> "1990_convertToShares"
+"1990_setPause" -> "1990__unpause"
+}subgraph cluster_295_Owned {
+label = "Owned"
+"295_transferOwnership" [label="transferOwnership"]
+"295_constructor" [label="constructor"]
+"295_transferOwnership" -> "295_onlyOwner"
+}subgraph cluster_1448_SafeTransferLib {
+label = "SafeTransferLib"
+"1448_safeTransferFrom" [label="safeTransferFrom"]
+"1448_safeTransferETH" [label="safeTransferETH"]
+"1448_safeApprove" [label="safeApprove"]
+"1448_safeTransfer" [label="safeTransfer"]
+}subgraph cluster_1609_UnstoppableMonitor {
+label = "UnstoppableMonitor"
+"1609_checkFlashLoan" [label="checkFlashLoan"]
+"1609_constructor" [label="constructor"]
+"1609_onFlashLoan" [label="onFlashLoan"]
+"1609_constructor" -> "1609_constructor"
+"1609_checkFlashLoan" -> "1609_onlyOwner"
+}subgraph cluster_683_ERC20 {
+label = "ERC20"
+"683_permit" [label="permit"]
+"683_transfer" [label="transfer"]
+"683_approve" [label="approve"]
+"683_constructor" [label="constructor"]
+"683_decimals" [label="decimals"]
+"683_transferFrom" [label="transferFrom"]
+"683__mint" [label="_mint"]
+"683_DOMAIN_SEPARATOR" [label="DOMAIN_SEPARATOR"]
+"683_computeDomainSeparator" [label="computeDomainSeparator"]
+"683_balanceOf" [label="balanceOf"]
+"683__burn" [label="_burn"]
+"683_DOMAIN_SEPARATOR" -> "683_computeDomainSeparator"
+"683_permit" -> "683_DOMAIN_SEPARATOR"
+"683_constructor" -> "683_computeDomainSeparator"
+}subgraph cluster_1363_FixedPointMathLib {
+label = "FixedPointMathLib"
+"1363_unsafeDivUp" [label="unsafeDivUp"]
+"1363_rpow" [label="rpow"]
+"1363_mulDivDown" [label="mulDivDown"]
+"1363_unsafeDiv" [label="unsafeDiv"]
+"1363_mulDivUp" [label="mulDivUp"]
+"1363_divWadDown" [label="divWadDown"]
+"1363_sqrt" [label="sqrt"]
+"1363_unsafeMod" [label="unsafeMod"]
+"1363_divWadUp" [label="divWadUp"]
+"1363_mulWadDown" [label="mulWadDown"]
+"1363_mulWadUp" [label="mulWadUp"]
+"1363_divWadUp" -> "1363_mulDivUp"
+"1363_divWadDown" -> "1363_mulDivDown"
+"1363_mulWadUp" -> "1363_mulDivUp"
+"1363_mulWadDown" -> "1363_mulDivDown"
+}subgraph cluster_1204_ERC4626 {
+label = "ERC4626"
+"1204_beforeWithdraw" [label="beforeWithdraw"]
+"1204_totalAssets" [label="totalAssets"]
+"1204_maxRedeem" [label="maxRedeem"]
+"1204_previewWithdraw" [label="previewWithdraw"]
+"1204_convertToShares" [label="convertToShares"]
+"1204_withdraw" [label="withdraw"]
+"1204_maxWithdraw" [label="maxWithdraw"]
+"1204_deposit" [label="deposit"]
+"1204_redeem" [label="redeem"]
+"1204_previewMint" [label="previewMint"]
+"1204_afterDeposit" [label="afterDeposit"]
+"1204_mint" [label="mint"]
+"1204_convertToAssets" [label="convertToAssets"]
+"1204_maxDeposit" [label="maxDeposit"]
+"1204_previewDeposit" [label="previewDeposit"]
+"1204_previewRedeem" [label="previewRedeem"]
+"1204_maxMint" [label="maxMint"]
+"1204_constructor" [label="constructor"]
+"1204_maxWithdraw" -> "1204_convertToAssets"
+"1204_convertToShares" -> "1204_totalAssets"
+"1204_withdraw" -> "1204_beforeWithdraw"
+"1204_redeem" -> "1204_beforeWithdraw"
+"1204_previewMint" -> "1204_totalAssets"
+"1204_deposit" -> "1204_previewDeposit"
+"1204_redeem" -> "1204_previewRedeem"
+"1204_mint" -> "1204__mint"
+"1204_convertToAssets" -> "1204_totalAssets"
+"1204_withdraw" -> "1204_previewWithdraw"
+"1204_previewWithdraw" -> "1204_totalAssets"
+"1204_constructor" -> "1204_constructor"
+"1204_mint" -> "1204_afterDeposit"
+"1204_withdraw" -> "1204__burn"
+"1204_deposit" -> "1204__mint"
+"1204_mint" -> "1204_previewMint"
+"1204_redeem" -> "1204__burn"
+"1204_previewRedeem" -> "1204_convertToAssets"
+"1204_previewDeposit" -> "1204_convertToShares"
+"1204_deposit" -> "1204_afterDeposit"
+}subgraph cluster_211_Pausable {
+label = "Pausable"
+"211__requireNotPaused" [label="_requireNotPaused"]
+"211_paused" [label="paused"]
+"211__unpause" [label="_unpause"]
+"211__pause" [label="_pause"]
+"211_constructor" [label="constructor"]
+"211__requirePaused" [label="_requirePaused"]
+"211__pause" -> "211__msgSender"
+"211__unpause" -> "211_whenPaused"
+"211__requireNotPaused" -> "211_paused"
+"211__unpause" -> "211__msgSender"
+"211__requirePaused" -> "211_paused"
+"211__pause" -> "211_whenNotPaused"
+}subgraph cluster_25_IERC3156FlashBorrower {
+label = "IERC3156FlashBorrower"
+"25_onFlashLoan" [label="onFlashLoan"]
+}subgraph cluster_94_Context {
+label = "Context"
+"94__msgSender" [label="_msgSender"]
+"94__msgData" [label="_msgData"]
+"94__contextSuffixLength" [label="_contextSuffixLength"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"ecrecover(bytes32,uint8,bytes32,bytes32)" 
+"revert InvalidAmount(uint256)" 
+"mload(uint256)" 
+"abi.encodePacked()" 
+"returndatasize()" 
+"revert InvalidBalance()" 
+"require(bool,string)" 
+"revert EnforcedPause()" 
+"require(bool)" 
+"gas()" 
+"revert CallbackFailed()" 
+"call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)" 
+"revert(uint256,uint256)" 
+"revert ExpectedPause()" 
+"abi.encode()" 
+"keccak256(bytes)" 
+"revert UnexpectedFlashLoan()" 
+"revert UnsupportedCurrency()" 
+"mstore(uint256,uint256)" 
+"1609_onFlashLoan" -> "revert UnexpectedFlashLoan()"
+"683_permit" -> "keccak256(bytes)"
+"1990_flashLoan" -> "revert InvalidAmount(uint256)"
+"1448_safeTransfer" -> "require(bool,string)"
+"1448_safeTransfer" -> "mstore(uint256,uint256)"
+"1363_mulDivDown" -> "revert(uint256,uint256)"
+"1609_onFlashLoan" -> "keccak256(bytes)"
+"683_permit" -> "abi.encode()"
+"1448_safeApprove" -> "mstore(uint256,uint256)"
+"1448_safeApprove" -> "require(bool,string)"
+"1990_flashLoan" -> "keccak256(bytes)"
+"1448_safeTransferFrom" -> "mload(uint256)"
+"1448_safeTransfer" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"683_permit" -> "ecrecover(bytes32,uint8,bytes32,bytes32)"
+"683_permit" -> "abi.encodePacked()"
+"683_permit" -> "require(bool,string)"
+"1363_mulDivUp" -> "revert(uint256,uint256)"
+"683_computeDomainSeparator" -> "abi.encode()"
+"1448_safeTransferFrom" -> "require(bool,string)"
+"1448_safeApprove" -> "mload(uint256)"
+"1448_safeApprove" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"1204_redeem" -> "require(bool,string)"
+"1448_safeApprove" -> "gas()"
+"1990_flashLoan" -> "revert InvalidBalance()"
+"1448_safeTransferETH" -> "gas()"
+"1448_safeTransferETH" -> "require(bool,string)"
+"1990_execute" -> "require(bool)"
+"211__requireNotPaused" -> "revert EnforcedPause()"
+"1448_safeTransferFrom" -> "mstore(uint256,uint256)"
+"1448_safeTransfer" -> "mload(uint256)"
+"1448_safeTransferETH" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"1448_safeTransfer" -> "returndatasize()"
+"1990_flashLoan" -> "revert CallbackFailed()"
+"1448_safeTransfer" -> "gas()"
+"1990_flashLoan" -> "revert UnsupportedCurrency()"
+"1448_safeTransferFrom" -> "returndatasize()"
+"1204_deposit" -> "require(bool,string)"
+"1448_safeTransferFrom" -> "gas()"
+"1990_flashFee" -> "revert UnsupportedCurrency()"
+"683_computeDomainSeparator" -> "keccak256(bytes)"
+"211__requirePaused" -> "revert ExpectedPause()"
+"1363_rpow" -> "revert(uint256,uint256)"
+"1448_safeTransferFrom" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"1609_checkFlashLoan" -> "require(bool)"
+"1448_safeApprove" -> "returndatasize()"
+}"1204_constructor" -> "683_decimals"
+"1609_checkFlashLoan" -> "1990_transferOwnership"
+"1204_previewMint" -> "1363_mulDivUp"
+"1204_mint" -> "1448_safeTransferFrom"
+"1990_totalAssets" -> "683_balanceOf"
+"1204_withdraw" -> "1448_safeTransfer"
+"1990_flashFee" -> "1363_mulWadUp"
+"1204_deposit" -> "1448_safeTransferFrom"
+"1204_previewWithdraw" -> "1363_mulDivUp"
+"1990_flashLoan" -> "1448_safeTransferFrom"
+"1609_checkFlashLoan" -> "1990_asset"
+"1990_flashLoan" -> "1448_safeTransfer"
+"1204_convertToShares" -> "1363_mulDivDown"
+"1204_redeem" -> "1448_safeTransfer"
+"1609_onFlashLoan" -> "683_approve"
+"1609_onFlashLoan" -> "1990_asset"
+"1609_checkFlashLoan" -> "1990_setPause"
+"1609_checkFlashLoan" -> "1990_flashLoan"
+"1204_convertToAssets" -> "1363_mulDivDown"
+"1990_flashLoan" -> "25_onFlashLoan"
+}

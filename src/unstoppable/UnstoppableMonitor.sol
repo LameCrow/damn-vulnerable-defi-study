@@ -20,6 +20,7 @@ contract UnstoppableMonitor is Owned, IERC3156FlashBorrower {
         vault = UnstoppableVault(_vault);
     }
 
+    
     function onFlashLoan(address initiator, address token, uint256 amount, uint256 fee, bytes calldata)
         external
         returns (bytes32)
@@ -33,11 +34,13 @@ contract UnstoppableMonitor is Owned, IERC3156FlashBorrower {
         return keccak256("IERC3156FlashBorrower.onFlashLoan");
     }
 
+    // test: 闪电贷100 DVT
     function checkFlashLoan(uint256 amount) external onlyOwner {
         require(amount > 0);
 
         address asset = address(vault.asset());
 
+        // 闪电贷 100 DVT
         try vault.flashLoan(this, asset, amount, bytes("")) {
             emit FlashLoanStatus(true);
         } catch {

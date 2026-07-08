@@ -1,0 +1,154 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_64_IERC3156FlashLender {
+label = "IERC3156FlashLender"
+"64_flashLoan" [label="flashLoan"]
+"64_maxFlashLoan" [label="maxFlashLoan"]
+"64_flashFee" [label="flashFee"]
+}subgraph cluster_1990_UnstoppableVault {
+label = "UnstoppableVault"
+"1990_flashFee" [label="flashFee"]
+"1990_setPause" [label="setPause"]
+"1990_beforeWithdraw" [label="beforeWithdraw"]
+"1990_flashLoan" [label="flashLoan"]
+"1990_slitherConstructorConstantVariables" [label="slitherConstructorConstantVariables"]
+"1990_setFeeRecipient" [label="setFeeRecipient"]
+"1990_maxFlashLoan" [label="maxFlashLoan"]
+"1990_execute" [label="execute"]
+"1990_afterDeposit" [label="afterDeposit"]
+"1990_slitherConstructorVariables" [label="slitherConstructorVariables"]
+"1990_constructor" [label="constructor"]
+"1990_totalAssets" [label="totalAssets"]
+"1990_setFeeRecipient" -> "1990_onlyOwner"
+"1990_flashFee" -> "1990_maxFlashLoan"
+"1990_totalAssets" -> "1990_nonReadReentrant"
+"1990_execute" -> "1990_whenPaused"
+"1990_flashLoan" -> "1990_flashFee"
+"1990_afterDeposit" -> "1990_whenNotPaused"
+"1990_setPause" -> "1990_onlyOwner"
+"1990_execute" -> "1990_onlyOwner"
+"1990_setPause" -> "1990__pause"
+"1990_flashLoan" -> "1990_totalAssets"
+"1990_afterDeposit" -> "1990_nonReentrant"
+"1990_constructor" -> "1990_constructor"
+"1990_maxFlashLoan" -> "1990_totalAssets"
+"1990_beforeWithdraw" -> "1990_nonReentrant"
+"1990_maxFlashLoan" -> "1990_nonReadReentrant"
+"1990_flashLoan" -> "1990_convertToShares"
+"1990_setPause" -> "1990__unpause"
+}subgraph cluster_295_Owned {
+label = "Owned"
+"295_transferOwnership" [label="transferOwnership"]
+"295_constructor" [label="constructor"]
+"295_transferOwnership" -> "295_onlyOwner"
+}subgraph cluster_683_ERC20 {
+label = "ERC20"
+"683_balanceOf" [label="balanceOf"]
+"683_permit" [label="permit"]
+"683_approve" [label="approve"]
+"683_constructor" [label="constructor"]
+"683_decimals" [label="decimals"]
+"683_transferFrom" [label="transferFrom"]
+"683__mint" [label="_mint"]
+"683_DOMAIN_SEPARATOR" [label="DOMAIN_SEPARATOR"]
+"683_computeDomainSeparator" [label="computeDomainSeparator"]
+"683_transfer" [label="transfer"]
+"683__burn" [label="_burn"]
+"683_DOMAIN_SEPARATOR" -> "683_computeDomainSeparator"
+"683_permit" -> "683_DOMAIN_SEPARATOR"
+"683_constructor" -> "683_computeDomainSeparator"
+}subgraph cluster_211_Pausable {
+label = "Pausable"
+"211__requireNotPaused" [label="_requireNotPaused"]
+"211_paused" [label="paused"]
+"211__unpause" [label="_unpause"]
+"211__pause" [label="_pause"]
+"211_constructor" [label="constructor"]
+"211__requirePaused" [label="_requirePaused"]
+"211__pause" -> "211__msgSender"
+"211__unpause" -> "211_whenPaused"
+"211__requireNotPaused" -> "211_paused"
+"211__unpause" -> "211__msgSender"
+"211__requirePaused" -> "211_paused"
+"211__pause" -> "211_whenNotPaused"
+}subgraph cluster_1204_ERC4626 {
+label = "ERC4626"
+"1204_beforeWithdraw" [label="beforeWithdraw"]
+"1204_totalAssets" [label="totalAssets"]
+"1204_maxRedeem" [label="maxRedeem"]
+"1204_previewWithdraw" [label="previewWithdraw"]
+"1204_convertToShares" [label="convertToShares"]
+"1204_withdraw" [label="withdraw"]
+"1204_maxWithdraw" [label="maxWithdraw"]
+"1204_redeem" [label="redeem"]
+"1204_deposit" [label="deposit"]
+"1204_previewMint" [label="previewMint"]
+"1204_afterDeposit" [label="afterDeposit"]
+"1204_mint" [label="mint"]
+"1204_convertToAssets" [label="convertToAssets"]
+"1204_maxDeposit" [label="maxDeposit"]
+"1204_previewDeposit" [label="previewDeposit"]
+"1204_previewRedeem" [label="previewRedeem"]
+"1204_maxMint" [label="maxMint"]
+"1204_constructor" [label="constructor"]
+"1204_maxWithdraw" -> "1204_convertToAssets"
+"1204_withdraw" -> "1204_beforeWithdraw"
+"1204_redeem" -> "1204_beforeWithdraw"
+"1204_previewMint" -> "1204_totalAssets"
+"1204_deposit" -> "1204_previewDeposit"
+"1204_redeem" -> "1204_previewRedeem"
+"1204_mint" -> "1204__mint"
+"1204_convertToAssets" -> "1204_totalAssets"
+"1204_withdraw" -> "1204_previewWithdraw"
+"1204_previewWithdraw" -> "1204_totalAssets"
+"1204_constructor" -> "1204_constructor"
+"1204_mint" -> "1204_afterDeposit"
+"1204_withdraw" -> "1204__burn"
+"1204_deposit" -> "1204__mint"
+"1204_mint" -> "1204_previewMint"
+"1204_redeem" -> "1204__burn"
+"1204_deposit" -> "1204_afterDeposit"
+"1204_previewRedeem" -> "1204_convertToAssets"
+"1204_previewDeposit" -> "1204_convertToShares"
+"1204_convertToShares" -> "1204_totalAssets"
+}subgraph cluster_94_Context {
+label = "Context"
+"94__msgSender" [label="_msgSender"]
+"94__msgData" [label="_msgData"]
+"94__contextSuffixLength" [label="_contextSuffixLength"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"abi.encode()" 
+"ecrecover(bytes32,uint8,bytes32,bytes32)" 
+"keccak256(bytes)" 
+"revert CallbackFailed()" 
+"revert InvalidAmount(uint256)" 
+"revert UnsupportedCurrency()" 
+"revert InvalidBalance()" 
+"require(bool,string)" 
+"abi.encodePacked()" 
+"revert EnforcedPause()" 
+"require(bool)" 
+"revert ExpectedPause()" 
+"1990_flashLoan" -> "revert CallbackFailed()"
+"1990_flashLoan" -> "keccak256(bytes)"
+"1990_flashLoan" -> "revert UnsupportedCurrency()"
+"1204_redeem" -> "require(bool,string)"
+"1204_deposit" -> "require(bool,string)"
+"683_permit" -> "keccak256(bytes)"
+"1990_flashLoan" -> "revert InvalidBalance()"
+"683_permit" -> "ecrecover(bytes32,uint8,bytes32,bytes32)"
+"683_permit" -> "abi.encodePacked()"
+"683_permit" -> "require(bool,string)"
+"683_computeDomainSeparator" -> "keccak256(bytes)"
+"1990_flashFee" -> "revert UnsupportedCurrency()"
+"1990_flashLoan" -> "revert InvalidAmount(uint256)"
+"211__requirePaused" -> "revert ExpectedPause()"
+"1990_execute" -> "require(bool)"
+"211__requireNotPaused" -> "revert EnforcedPause()"
+"683_permit" -> "abi.encode()"
+"683_computeDomainSeparator" -> "abi.encode()"
+}"1204_constructor" -> "683_decimals"
+"1990_totalAssets" -> "683_balanceOf"
+}

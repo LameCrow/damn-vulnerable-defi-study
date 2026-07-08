@@ -58,6 +58,7 @@ contract UnstoppableVault is IERC3156FlashLender, ReentrancyGuard, Owned, ERC462
             revert UnsupportedCurrency();
         }
 
+        // 宽限期内, 免除所有fee
         if (block.timestamp < end && _amount < maxFlashLoan(_token)) {
             return 0;
         } else {
@@ -75,14 +76,18 @@ contract UnstoppableVault is IERC3156FlashLender, ReentrancyGuard, Owned, ERC462
     /**
      * @inheritdoc IERC3156FlashLender
      */
+    // setUp: receiver = monitor, token = DVT, amount = 100, data = null
     function flashLoan(IERC3156FlashBorrower receiver, address _token, uint256 amount, bytes calldata data)
         external
         returns (bool)
     {
         if (amount == 0) revert InvalidAmount(0); // fail early
         if (address(asset) != _token) revert UnsupportedCurrency(); // enforce ERC3156 requirement
+        // 查询Vault的DVT余额
         uint256 balanceBefore = totalAssets();
-        if (convertToShares(totalSupply) != balanceBefore) revert InvalidBalance(); // enforce ERC4626 requirement
+        // 初始情况下: DVT和tDVT的汇率为1:1, 所以这个条件可以满
+        // enforce ERC4626 requirement足
+        if (convertToShares(totalSupply) != balanceBefore) revert InvalidBalance(); // @audit
 
         // transfer tokens out + execute callback on receiver
         ERC20(_token).safeTransfer(address(receiver), amount);
@@ -97,6 +102,7 @@ contract UnstoppableVault is IERC3156FlashLender, ReentrancyGuard, Owned, ERC462
         }
 
         // pull amount + fee from receiver, then pay the fee to the recipient
+        // 需要补上fee
         ERC20(_token).safeTransferFrom(address(receiver), address(this), amount + fee);
         ERC20(_token).safeTransfer(feeRecipient, fee);
 

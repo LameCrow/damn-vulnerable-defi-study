@@ -1,0 +1,29 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_1363_FixedPointMathLib {
+label = "FixedPointMathLib"
+"1363_unsafeDivUp" [label="unsafeDivUp"]
+"1363_rpow" [label="rpow"]
+"1363_mulDivDown" [label="mulDivDown"]
+"1363_unsafeDiv" [label="unsafeDiv"]
+"1363_mulDivUp" [label="mulDivUp"]
+"1363_divWadDown" [label="divWadDown"]
+"1363_sqrt" [label="sqrt"]
+"1363_unsafeMod" [label="unsafeMod"]
+"1363_slitherConstructorConstantVariables" [label="slitherConstructorConstantVariables"]
+"1363_divWadUp" [label="divWadUp"]
+"1363_mulWadDown" [label="mulWadDown"]
+"1363_mulWadUp" [label="mulWadUp"]
+"1363_divWadUp" -> "1363_mulDivUp"
+"1363_divWadDown" -> "1363_mulDivDown"
+"1363_mulWadUp" -> "1363_mulDivUp"
+"1363_mulWadDown" -> "1363_mulDivDown"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"revert(uint256,uint256)" 
+"1363_rpow" -> "revert(uint256,uint256)"
+"1363_mulDivDown" -> "revert(uint256,uint256)"
+"1363_mulDivUp" -> "revert(uint256,uint256)"
+}
+}

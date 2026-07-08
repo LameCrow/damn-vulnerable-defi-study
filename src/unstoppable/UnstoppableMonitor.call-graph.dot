@@ -1,0 +1,28 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_1609_UnstoppableMonitor {
+label = "UnstoppableMonitor"
+"1609_checkFlashLoan" [label="checkFlashLoan"]
+"1609_constructor" [label="constructor"]
+"1609_onFlashLoan" [label="onFlashLoan"]
+"1609_constructor" -> "1609_constructor"
+"1609_checkFlashLoan" -> "1609_onlyOwner"
+}subgraph cluster_25_IERC3156FlashBorrower {
+label = "IERC3156FlashBorrower"
+"25_onFlashLoan" [label="onFlashLoan"]
+}subgraph cluster_295_Owned {
+label = "Owned"
+"295_transferOwnership" [label="transferOwnership"]
+"295_constructor" [label="constructor"]
+"295_transferOwnership" -> "295_onlyOwner"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"require(bool)" 
+"keccak256(bytes)" 
+"revert UnexpectedFlashLoan()" 
+"1609_onFlashLoan" -> "keccak256(bytes)"
+"1609_checkFlashLoan" -> "require(bool)"
+"1609_onFlashLoan" -> "revert UnexpectedFlashLoan()"
+}
+}
