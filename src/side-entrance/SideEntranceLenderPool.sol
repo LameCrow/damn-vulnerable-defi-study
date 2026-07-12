@@ -33,6 +33,7 @@ contract SideEntranceLenderPool {
     }
 
     function flashLoan(uint256 amount) external {
+        // 只检查pool整体的balance, 没有检查具体的LP's balance
         uint256 balanceBefore = address(this).balance;
 
         IFlashLoanEtherReceiver(msg.sender).execute{value: amount}();
