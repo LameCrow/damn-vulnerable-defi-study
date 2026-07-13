@@ -87,7 +87,9 @@ contract TheRewarderDistributor {
         for (uint256 i = 0; i < inputClaims.length; i++) {
             inputClaim = inputClaims[i];
 
+            // wordPosition = batchNumber >> 8
             uint256 wordPosition = inputClaim.batchNumber / 256;
+            // bitPosition = batchNumber & 0xff
             uint256 bitPosition = inputClaim.batchNumber % 256;
 
             if (token != inputTokens[inputClaim.tokenIndex]) {
@@ -96,6 +98,7 @@ contract TheRewarderDistributor {
                 }
 
                 token = inputTokens[inputClaim.tokenIndex];
+                // 具体的bitmap
                 bitsSet = 1 << bitPosition; // set bit at given position
                 amount = inputClaim.amount;
             } else {
@@ -108,6 +111,7 @@ contract TheRewarderDistributor {
                 if (!_setClaimed(token, amount, wordPosition, bitsSet)) revert AlreadyClaimed();
             }
 
+            // 验证发送方是否是rewarder
             bytes32 leaf = keccak256(abi.encodePacked(msg.sender, inputClaim.amount));
             bytes32 root = distributions[token].roots[inputClaim.batchNumber];
 

