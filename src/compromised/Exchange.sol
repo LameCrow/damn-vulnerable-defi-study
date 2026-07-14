@@ -33,6 +33,7 @@ contract Exchange is ReentrancyGuard {
         }
 
         // Price should be in [wei / NFT]
+        // 使用中位数, 而不是平均数
         uint256 price = oracle.getMedianPrice(token.symbol());
         if (msg.value < price) {
             revert InvalidPayment();

